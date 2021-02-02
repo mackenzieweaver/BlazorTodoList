@@ -1,7 +1,47 @@
 ﻿@page "/todo"
 
-<h3>Todo</h3>
+@using BlazorTodoList.Data;
+
+<h3>Todo (@todos.Count(todo => todo.IsDone == false))</h3>
+
+<input @bind="newTodo" placeholder="Something todo" />
+<button @onclick="AddTodo">Add</button>
+
+<ul>
+    @foreach (var todo in todos)
+    {
+        <li>
+            <input type="checkbox" @bind="todo.IsDone" />
+            @if (Edit)
+            {
+                <input @bind="todo.Title" />
+                <button @onclick="ToggleEdit">Save</button>
+            }
+            else
+            {
+                <span class="pl-3">@todo.Title</span>
+                <button @onclick="ToggleEdit">Edit</button>
+            }
+        </li>
+    }
+</ul>
 
 @code {
+    private IList<TodoItem> todos = new List<TodoItem>();
+    private string newTodo;
 
+    private void AddTodo()
+    {
+        if (string.IsNullOrWhiteSpace(newTodo) == false)
+        {
+            todos.Add(new TodoItem { Title = newTodo, IsDone = false });
+            newTodo = string.Empty;
+        }
+    }
+
+    private bool Edit = false;
+    private void ToggleEdit()
+    {
+        Edit = !Edit;
+    }
 }
